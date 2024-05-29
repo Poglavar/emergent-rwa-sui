@@ -9,35 +9,39 @@ import { ENetwork } from '~~/types/ENetwork'
 
 const DEFAULT_REFETCH_INTERVAL = 3000
 
-export interface IUseNetworkTypeParams {
+export interface IUseSynchronizedNetworkTypeParams {
   /**
-   * Whether the balance needs to be refreshed regularly or just once.
+   * Whether the app network needs to be synchronized with the wallet network regularly or just once.
    */
-  autoRefetch?: boolean
+  autoSync?: boolean
   /**
-   * Auto refetch interval in milliseconds.
+   * Auto sync interval in milliseconds.
    */
-  autoRefetchInterval?: number
+  autoSyncInterval?: number
 }
-export interface IUseNetworkTypeResponse {
+export interface IUseSynchronizedNetworkTypeResponse {
   /**
    * Network type or undefined if wallet is not connected.
    */
   networkType: ENetwork | undefined
-  refetch: () => void
+  /**
+   * Synchronize app network with wallet network on demand.
+   * @returns
+   */
+  synchronize: () => void
 }
 
-const useNetworkType = ({
-  autoRefetch,
-  autoRefetchInterval,
-}: IUseNetworkTypeParams = {}): IUseNetworkTypeResponse => {
+const useSynchronizedNetworkType = ({
+  autoSync,
+  autoSyncInterval,
+}: IUseSynchronizedNetworkTypeParams = {}): IUseSynchronizedNetworkTypeResponse => {
   const wallet = useCurrentWallet()
   const ctx = useSuiClientContext()
   const [networkType, setNetworkType] = useState<ENetwork | undefined>()
 
   // @todo Find a better type for the wallet.
   /* eslint-disable  @typescript-eslint/no-explicit-any */
-  const connectionStatusCheck = (
+  const synchronizeNetworkType = (
     wallet: any,
     ctx: SuiClientProviderContext
   ) => {
@@ -50,48 +54,48 @@ const useNetworkType = ({
       wallet.currentWallet?.accounts?.[0].chains?.[0]
     ) as ENetwork | undefined
 
-    // This is currently selected wallet network.
+    // Save currently selected wallet network.
     setNetworkType(newNetwork)
 
-    // And this is current app network.
+    // If network is defined, set the app network to it.
     if (newNetwork != null) {
       ctx.selectNetwork(newNetwork)
     }
 
-    console.debug('debug: Network type refetched')
+    console.debug('debug: Network type synchronized')
   }
 
   useEffect(() => {
-    connectionStatusCheck(wallet, ctx)
+    synchronizeNetworkType(wallet, ctx)
 
-    if (autoRefetch == null || autoRefetch === false) {
+    if (autoSync == null || autoSync === false) {
       return
     }
 
     const interval = setInterval(
       () => {
-        if (!wallet.isConnected || !autoRefetch) {
-          console.debug('debug: Network type refetching stopped')
+        if (!wallet.isConnected || !autoSync) {
+          console.debug('debug: Network type synchronizing stopped')
           setNetworkType(undefined)
           clearInterval(interval)
           return
         }
 
-        connectionStatusCheck(wallet, ctx)
+        synchronizeNetworkType(wallet, ctx)
       },
-      autoRefetch && autoRefetchInterval != null
-        ? autoRefetchInterval
+      autoSync && autoSyncInterval != null
+        ? autoSyncInterval
         : DEFAULT_REFETCH_INTERVAL
     )
     return () => {
       clearTimeout(interval)
     }
-  }, [autoRefetch, autoRefetchInterval, wallet, ctx])
+  }, [autoSync, autoSyncInterval, wallet, ctx])
 
   return {
     networkType: networkType as ENetwork | undefined,
-    refetch: () => connectionStatusCheck(wallet, ctx),
+    synchronize: () => synchronizeNetworkType(wallet, ctx),
   }
 }
 
-export default useNetworkType
+export default useSynchronizedNetworkType
