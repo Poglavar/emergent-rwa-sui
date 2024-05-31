@@ -33,6 +33,19 @@
         border-radius: 10px;
     }
 
+    .popup-content-box {
+        background-color: lightblue;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 5px 5px 5px grey;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        transform: translate(-50%, -50%);
+    }
+
     /* 
         Define the CSS class that will be used to style the heading of the container boxes.
         The heading will have a greenish background and a rounded border. The font will be
@@ -53,7 +66,7 @@
 </style>
 
 <head>
-    <title>htmx</title>
+    <title>Emergent.RWA</title>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@latest/dist/htmx.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
@@ -64,93 +77,125 @@
 </head>
 
 <body>
+    <p><a href="https://tinyurl.com/emergentrwa">Emergent.RWA 屮</a></p>
+
     <!-- 
+        An invisible div used for a popup that will become visible on the click of the "declare" button
+    -->
+    <div id="popup" class="popup-content-box" style="display: none; padding: 10px; margin: 10px">
+        <h1>Declare a Real World Asset On Chain</h1>
+        <h2>An NFT will be minted on Sui</h2>
+        <input type="text" name="nftname" placeholder="Enter the name of the RWA"
+            style=" padding: 10px; margin: 10px;"></input>
+        <input type="text" name="nfturi" placeholder="Enter the supporting URI (optional)"
+            style="width: 100%; padding: 10px; margin: 10px;"></input>
+        <button class="bigcoabutton" id="declare" hx-post="http://localhost:3333/attestations/create/nft"
+            hx-on:htmx:after-request="document.getElementById('popup').style.display = 'none';"
+            hx-trigger="click">Declare</button>
+        <button class="bigcoabutton" id="cancel"
+            onclick="document.getElementById('popup').style.display = 'none';">Cancel</button>
+    </div>
+
+    <!--
+        Two buttons, one says Declare a new RWA and another that says Attest
+    -->
+    <div>
+        <!-- This button activates the popup by setting the display property of the popup to block -->
+        <button class="bigcoabutton" id="declare"
+            onclick="document.getElementById('popup').style.display = 'block';">Declare
+            a new RWA</button>
+        <button class="bigcoabutton" id="attest">Attest</button>
+    </div>
+
+    <div class="squares" style="position: absolute; top: 75px; left: 0; width: 100%; height: 100%;">
+        <!-- 
         The divs are defined clockwise starting from the top left corner of the window
     -->
-    <!-- 
+        <!-- 
         The first div will be positioned from the top left corner of the window
         until the halfway point of the window width and height
     -->
-    <div class="maincontainer" id="topleft" style="position: absolute; top: 0; left: 0; width: 50%; height: 50%;"
-        hx-get="/demo" hx-trigger="load">
-        <div class="boxheading">RWA Declarations</div>
-        <!-- 
+        <div class="maincontainer" id="topleft" style="position: absolute; top: 0; left: 0; width: 50%; height: 50%;"
+            hx-trigger="load">
+            <div class="boxheading">RWA Declarations</div>
+            <!-- 
         This div contains a scrollable list of items
-    -->
-        <div class="scrollablelist" style="overflow-y: scroll; height: 100%;">
-            <div class="nftitem" value='1'>House 1</div>
-            <div class="nftitem" value='2'>Car 1</div>
-            <div class="nftitem" value='3'>House 3</div>
-            <div class="nftitem" value='4'>Car 4</div>
-            <div class="nftitem" value='5'>Company 5</div>
-            <div class="nftitem" value='5'>Stock in Company 5</div>
-            <div class="nftitem" value='5'>Plot of Land 5</div>
-            <div class="nftitem" value='5'>Laptop 5</div>
-            <div class="nftitem" value='5'>House 5</div>
-            <div class="nftitem" value='5'>Apartment 5</div>
-            <div class="nftitem" value='5'>House 5</div>
-            <div class="nftitem" value='5'>Villa 5</div>
-            <div class="nftitem" value='5'>Car 5</div>
-            <div class="nftitem" value='5'>Motocycle 5</div>
-            <div class="nftitem" value='5'>Field 5</div>
-            <div class="nftitem" value='5'>Forest 5</div>
-            <div class="nftitem" value='5'>Field 5</div>
-            <div class="nftitem" value='5'>Forest 5</div>
-            <div class="nftitem" value='5'>Plot of Land 5</div>
-            <div class="nftitem" value='5'>Apartment 5</div>
-            <div class="nftitem" value='5'>House 234</div>
-            <div class="nftitem" value='5'>House 5</div>
-            <div class="nftitem" value='5'>House 8097</div>
-            <div class="nftitem" value='5'>Car 9088</div>
-            <div class="nftitem" value='5'>Plot of Land 599</div>
-            <div class="nftitem" value='5'>Plot of Land 3356</div>
-            <div class="nftitem" value='5'>Forest 890</div>
-            <div class="nftitem" value='5'>Car 8008</div>
-            <div class="nftitem" value='5'>Syscraper 8970</div>
-            <div class="nftitem" value='5'>Apartment 889</div>
-            <div class="nftitem" value='5'>Car 967</div>
-            <div class="nftitem" value='5'>Building 789</div>
-            <div class="nftitem" value='5'>House 475</div>
-            <div class="nftitem" value='5'>Apartment 333</div>
-            <div class="nftitem" value='5'>30 stocks in Company XYZ</div>
-            <div class="nftitem" value='5'>Plot of land 555</div>
-            <div class="nftitem" value='5'>Car 88</div>
-            <div class="nftitem" value='5'>House 124</div>
+        -->
+            <div class="scrollablelist" style="overflow-y: scroll; height: 100%;">
+                <div class="nftitem" value='1'>House 1</div>
+                <div class="nftitem" value='2'>Car 1</div>
+                <div class="nftitem" value='3'>House 3</div>
+                <div class="nftitem" value='4'>Car 4</div>
+                <div class="nftitem" value='5'>Company 5</div>
+                <div class="nftitem" value='5'>Stock in Company 5</div>
+                <div class="nftitem" value='5'>Plot of Land 5</div>
+                <div class="nftitem" value='5'>Laptop 5</div>
+                <div class="nftitem" value='5'>House 5</div>
+                <div class="nftitem" value='5'>Apartment 5</div>
+                <div class="nftitem" value='5'>House 5</div>
+                <div class="nftitem" value='5'>Villa 5</div>
+                <div class="nftitem" value='5'>Car 5</div>
+                <div class="nftitem" value='5'>Motocycle 5</div>
+                <div class="nftitem" value='5'>Field 5</div>
+                <div class="nftitem" value='5'>Forest 5</div>
+                <div class="nftitem" value='5'>Field 5</div>
+                <div class="nftitem" value='5'>Forest 5</div>
+                <div class="nftitem" value='5'>Plot of Land 5</div>
+                <div class="nftitem" value='5'>Apartment 5</div>
+                <div class="nftitem" value='5'>House 234</div>
+                <div class="nftitem" value='5'>House 5</div>
+                <div class="nftitem" value='5'>House 8097</div>
+                <div class="nftitem" value='5'>Car 9088</div>
+                <div class="nftitem" value='5'>Plot of Land 599</div>
+                <div class="nftitem" value='5'>Plot of Land 3356</div>
+                <div class="nftitem" value='5'>Forest 890</div>
+                <div class="nftitem" value='5'>Car 8008</div>
+                <div class="nftitem" value='5'>Syscraper 8970</div>
+                <div class="nftitem" value='5'>Apartment 889</div>
+                <div class="nftitem" value='5'>Car 967</div>
+                <div class="nftitem" value='5'>Building 789</div>
+                <div class="nftitem" value='5'>House 475</div>
+                <div class="nftitem" value='5'>Apartment 333</div>
+                <div class="nftitem" value='5'>30 stocks in Company XYZ</div>
+                <div class="nftitem" value='5'>Plot of land 555</div>
+                <div class="nftitem" value='5'>Car 88</div>
+                <div class="nftitem" value='5'>House 124</div>
+            </div>
         </div>
-    </div>
 
-    <!-- 
+        <!-- 
         The second div will be positioned from the halfway point of the window width to the right corner of the window
         and from the top of the window to the halfway point of the window height
     -->
-    <div style="position: absolute; top: 0; left: 50%; width: 50%; height: 50%;" class="maincontainer">
-        <div class="boxheading">Attestations</div>
+        <div style="position: absolute; top: 0; left: 50%; width: 50%; height: 50%;" class="maincontainer">
+            <div class="boxheading">Attestations</div>
 
-        <div class="scrollablelist" style="overflow-y: scroll; height: 100%;"
-            hx-get="http:/localhost:3333/attestations/owned/0xf7ae71f84fabc58662bd4209a8893f462c60f247095bb35b19ff659ad0081462"
-            hx-trigger="load">
+            <div class="scrollablelist" style="overflow-y: scroll; height: 100%;"
+                hx-get="http:/localhost:3333/attestations/owned/0xf7ae71f84fabc58662bd4209a8893f462c60f247095bb35b19ff659ad0081462"
+                hx-trigger="load">
+            </div>
+
         </div>
-
-    </div>
-    <!-- 
+        <!-- 
         The third div will be positioned from the halfway point of the window width to the right corner of the window
         and from the halfway point of the window height to the bottom of the window
     -->
-    <div style="position: absolute; top: 50%; left: 50%; width: 50%; height: 50%;" hx-get="/demo" hx-trigger="load"
-        class="maincontainer">
-        <div class="boxheading">Attestation Requests</div>
+        <div style="position: absolute; top: 50%; left: 50%; width: 50%; height: 50%;" hx-trigger="load"
+            class="maincontainer">
+            <div class="boxheading">Attestation Requests</div>
 
-    </div>
-    <!-- 
+        </div>
+        <!-- 
         The fourth div will be positioned from the halfway point of the window height to the bottom of the window
         and from the left of the window to the halfway point of the window width
     -->
-    <div style="position: absolute; top: 50%; left: 0; width: 50%; height: 50%;" hx-get="/demo" hx-trigger="load"
-        class="maincontainer">
-        <div class="boxheading">Attestation Offers</div>
+        <div style="position: absolute; top: 50%; left: 0; width: 50%; height: 50%;" hx-trigger="load"
+            class="maincontainer">
+            <div class="boxheading">Attestation Offers</div>
+
+        </div>
 
     </div>
-
 </body>
 
 </html>
