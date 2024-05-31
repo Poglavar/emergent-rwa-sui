@@ -5,14 +5,13 @@ const { Ed25519Keypair } = require('@mysten/sui.js/keypairs/ed25519')
 const { TransactionBlock } = require('@mysten/sui.js/transactions')
 const client = new SuiClient({ url: getFullnodeUrl(process.env.SUI_NETWORK) })
 
-const phrase = process.env.SEED_PHRASE
-const kp = Ed25519Keypair.deriveKeypair(phrase, `m/44'/784'/0'/0'/0'`)
-console.log('Public key', kp.getPublicKey().toSuiAddress())
-// console.log('Private key', kp.getSecretKey())
-
-const packageId = '0xdc9b8b53d431d6fa63c408f817b05aa80ad5aa638f06aef10a09594b8bf3ab9b'
-
 const main = async () => {
+    const phrase = process.env.SEED_PHRASE
+    const kp = Ed25519Keypair.deriveKeypair(phrase, `m/44'/784'/0'/0'/0'`)
+    console.log('Public key', kp.getPublicKey().toSuiAddress())
+    // console.log('Private key', kp.getSecretKey())
+
+    const packageId = '0xdc9b8b53d431d6fa63c408f817b05aa80ad5aa638f06aef10a09594b8bf3ab9b'
     const packageObjectId = packageId
     const moduleName = 'nft'
     const functionName = 'createRwaNft'

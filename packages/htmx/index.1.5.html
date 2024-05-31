@@ -1,185 +1,111 @@
 <!-- Use htmx to create 4 different windows, each with a list of items -->
 <!-- Items will be fetched from the server using htmx -->
-<html lang="en">
+<html>
+
+<!--
+    Define the CSS class that will be used to style the container boxes
+-->
+<style>
+    .maincontainer {
+        background-color: lightblue;
+        border: 1px solid black;
+    }
+
+    .scrollablelist {
+        padding-left: 10px;
+        background-color: white;
+        border: 1px solid black;
+    }
+
+    .coinitem {
+        padding-left: 10px;
+        /* add a rounded border and pink background */
+        border: 1px solid black;
+        background-color: pink;
+        border-radius: 10px;
+    }
+
+    .nftitem {
+        padding-left: 10px;
+        /* add a rounded border and light light yellow background */
+        border: 1px solid black;
+        background-color: lightyellow;
+        border-radius: 10px;
+    }
+
+    .popup-content-box {
+        background-color: lightblue;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 5px 5px 5px grey;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        transform: translate(-50%, -50%);
+    }
+
+    /* 
+        Define the CSS class that will be used to style the heading of the container boxes.
+        The heading will have a greenish background and a rounded border. The font will be
+        large, bold and the text will be centered.
+    */
+    .boxheading {
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        background-color: lightgreen;
+        border: 1px solid black;
+        border-radius: 10px;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
 
 <head>
     <title>Emergent.RWA</title>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@latest/dist/htmx.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/modern-normalize@2.0.0/modern-normalize.min.css" rel="stylesheet">
     <style>
-        body {
-            padding: 10px;
-        }
-
-        header {
-            display: flex;
-            flex-direction: row;
-            gap: 3rem;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        header .title {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        header .actions {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-        }
-
         .blue-background-class {
             background-color: lightblue;
-        }
-
-        .maincontainer {
-            background-color: lightblue;
-            border: 1px solid black;
-        }
-
-        .scrollablelist {
-            padding-left: 10px;
-            background-color: white;
-            border: 1px solid black;
-        }
-
-        .coinitem {
-            padding-left: 10px;
-            /* add a rounded border and pink background */
-            border: 1px solid black;
-            background-color: pink;
-            border-radius: 10px;
-        }
-
-        .nftitem {
-            padding-left: 10px;
-            /* add a rounded border and light light yellow background */
-            border: 1px solid black;
-            background-color: lightyellow;
-            border-radius: 10px;
-        }
-
-        .popup-content-box {
-            background-color: lightblue;
-            border: 1px solid black;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 5px 5px 5px grey;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            z-index: 1;
-            transform: translate(-50%, -50%);
-        }
-
-        .popup-content-box input[type=text] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .popup-content-box h1 {
-            margin-top: 0;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .popup-content-box h2 {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        /* 
-            Define the CSS class that will be used to style the heading of the container boxes.
-            The heading will have a greenish background and a rounded border. The font will be
-            large, bold and the text will be centered.
-        */
-        .boxheading {
-            margin-left: 10px;
-            margin-right: 10px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            background-color: lightgreen;
-            border: 1px solid black;
-            border-radius: 10px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .btn {
-            background-color: #ddd;
-            border-radius: 8px;
-            border-width: 0;
-            color: #333333;
-            cursor: pointer;
-            display: inline-block;
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 20px;
-            list-style: none;
-            margin: 0 4px;
-            padding: 10px 12px;
-            text-align: center;
-            transition: all 200ms;
-            vertical-align: baseline;
-            white-space: nowrap;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-        }
-
-        .btn:hover,
-        .btn:focus {
-            background-color: #ccc;
-        }
-
-        .btn.primary {
-            background-color: #0284c7;
-            color: #fff;
-        }
-
-        .btn.primary:hover,
-        .btn.primary:focus {
-            background-color: #0369a1;
         }
     </style>
 </head>
 
-<body class="p-3">
-    <header>
-        <div>
-            <h1 class="title"><a href="https://tinyurl.com/emergentrwa">Emergent.RWA 屮</a></h1>
-        </div>
-        <div class="actions">
-            <!-- This button activates the popup by setting the display property of the popup to block -->
-            <button class="btn" id="declare" onclick="document.getElementById('popup').style.display = 'block';">Declare
-                a new RWA</button>
-            <button class="btn" id="attest">Attest</button>
-        </div>
-    </header>
-
+<body>
+    <p><a href="https://tinyurl.com/emergentrwa">Emergent.RWA 屮</a></p>
 
     <!-- 
         An invisible div used for a popup that will become visible on the click of the "declare" button
     -->
-    <form id="popup" class="popup-content-box" style="display: none;">
+    <form id="popup" class="popup-content-box" style="display: none; padding: 10px; margin: 10px">
         <h1>Declare a Real World Asset On Chain</h1>
         <h2>An NFT will be minted on Sui</h2>
-        <input type="text" name="nft_name" placeholder="Enter the name of the RWA" class="input"></input>
-        <input type="text" name="nft_uri" placeholder="Enter the supporting URI (optional)"></input>
-        <button class="btn primary" id="declare" hx-post="http://localhost:3333/attestations/create/nft"
+        <input type="text" name="nft_name" placeholder="Enter the name of the RWA"
+            style=" padding: 10px; margin: 10px;"></input>
+        <input type="text" name="nft_uri" placeholder="Enter the supporting URI (optional)"
+            style="width: 100%; padding: 10px; margin: 10px;"></input>
+        <button class="bigcoabutton" id="declare" hx-post="http://localhost:3333/attestations/create/nft"
             hx-on:htmx:after-request="document.getElementById('popup').style.display = 'none';"
             hx-trigger="click">Declare</button>
-        <button class="btn" id="cancel"
+        <button class="bigcoabutton" id="cancel"
             onclick="document.getElementById('popup').style.display = 'none';">Cancel</button>
     </form>
+
+    <!--
+        Two buttons, one says Declare a new RWA and another that says Attest
+    -->
+    <div>
+        <!-- This button activates the popup by setting the display property of the popup to block -->
+        <button class="bigcoabutton" id="declare"
+            onclick="document.getElementById('popup').style.display = 'block';">Declare
+            a new RWA</button>
+        <button class="bigcoabutton" id="attest">Attest</button>
+    </div>
 
     <div class="squares" style="position: absolute; top: 75px; left: 0; width: 100%; height: 100%;">
         <!-- 
