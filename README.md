@@ -1,6 +1,7 @@
 # emergent-rwa-sui
 
-RWA Tokenization on Sui
+Emergent.RWA is a platform for permissionless, do-it-yourself tokenization on Sui.
+It utilizes the Attestation primitive (sets of which are Recipes) and a Marketplace for them to enable anyone to tokenize anything.
 
 Components:
 
