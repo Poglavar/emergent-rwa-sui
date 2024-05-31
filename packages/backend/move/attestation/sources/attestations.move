@@ -9,6 +9,16 @@
 
     We represent attestations as a struct that contains these properties. The attester is a blockchan address,
     as is the target. The statement is a byte array.
+
+    TODO:
+    - change statement to Schema
+    - create the contract or module for Schema creation (this one is for Attesting)
+    - switch recepient maybe to target (who should own the attestation?)
+    - maybe 
+    - add revocation logic
+
+    Remember the important EAS primitive:
+    - 
 */
 
 module attestation::attestation {  
