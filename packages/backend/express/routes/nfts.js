@@ -1,7 +1,7 @@
 require('dotenv').config({ path: ['.env', '../.env', '../../.env'] })
 
-var express = require('express')
-var router = express.Router()
+var express = require('express');
+var router = express.Router();
 
 const { getFullnodeUrl, SuiClient } = require('@mysten/sui.js/client')
 const client = new SuiClient({ url: getFullnodeUrl(process.env.SUI_NETWORK) })
@@ -61,22 +61,14 @@ const getOwnedAttestationsForAddress = async (req, res, next) => {
     )
 }
 
-const getAttestations = async (req, res, next) => {
-}
 
-const createAttestation = async (req, res, next) => {
-}
+router.get('/', function (req, res, next) {
+    res.send('respond with a resource');
+});
 
-const createNft = async (req, res, next) => {
-    console.log('createNft')
-    res.send('createNft')
-}
+router.post('/create', async function (req, res, next) {
+});
 
-// All the routes here start with '/attestations'
-router.get('/', getAttestations)
-router.get('/owned/:address', getOwnedAttestationsForAddress)
+router.get('/owned/:address', getOwnedAttestationsForAddress);
 
-router.post('/create', createAttestation)
-router.post('/create/nft', createNft)
-
-module.exports = router
+module.exports = router;
